@@ -98,7 +98,7 @@ paths:
           type: integer
         description: worker id
       responses:
-        '200':
+        '204':
           description: Successful operation       
         '404':
           description: no such id
@@ -146,8 +146,6 @@ components:
         - coordinates
         - salary
         - startDate
-        - endDate
-        - status
         - person
       type: object
       properties:
@@ -191,13 +189,13 @@ components:
         endDate:
           type: string
           format: localDateTime
-          nullable: false
+          nullable: true
           example: "2024-10-10T09:39:39.275039200"
           
         status:
           allOf: 
             - $ref: "#/components/schemas/Status"
-            - nullable: false
+            - nullable: true
             
         person:
           allOf: 
@@ -207,44 +205,131 @@ components:
       xml:
         name: worker
 
-    Coordinates:
+
+
+    CreateWorkerDTO:
       required:
-        - x
-        - y
+        - name
+        - coordinates
+        - salary
+        - startDate
+        - person
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: "Anatoliy"
+          
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+            - nullable: false
+          
+        salary:
+          type: number
+          format: long
+          minimum: 1
+          
+        startDate:
+          type: string
+          format: date
+          nullable: false
+          example: "Mon May 11 00:00:00 MSD 2024"
+          
+        endDate:
+          type: string
+          format: localDateTime
+          nullable: true
+          example: "2024-10-10T09:39:39.275039200"
+          
+        status:
+          allOf: 
+            - $ref: "#/components/schemas/Status"
+            - nullable: true
+            
+        person:
+          allOf: 
+            - $ref: "#/components/schemas/Person"
+            - nullable: false
+
+
+    WorkerDTO:
+      required:
+        - name
+        - coordinates
+        - salary
+        - startDate
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+          nullable: false
+          minimum: 1
+          example: 12
+          description: "Value is unique. Generated automatically."
+          
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: "Anatoliy"
+          
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+            - nullable: false
+          
+        salary:
+          type: number
+          format: long
+          minimum: 1
+          
+        endDate:
+          type: string
+          format: localDateTime
+          nullable: true
+          example: "2024-10-10T09:39:39.275039200"
+          
+        status:
+          allOf: 
+            - $ref: "#/components/schemas/Status"
+            - nullable: true
+
+    Coordinates:
       type: object
       properties:
         x:
           type: number
           format: long
-          nullable: false
+          nullable: true
           maximum: -106
           example: -555
         y:
           type: number
           format: float
-          nullable: false
+          nullable: true
           example: -555.55
       xml:
         name: coordinates
         
     Person:
       required:
-        - birthday
-        - eyeColor
         - hairColor
-        - nationality
         - location
       type: object
       properties:
         birthday:
           type: string
           format: date
-          nullable: false
+          nullable: true
           example: "Mon May 11 00:00:00 MSD 2024"
         eyeColor:
           allOf: 
             - $ref: "#/components/schemas/EyeColor"
-            - nullable: false
+            - nullable: true
         hairColor:
           allOf: 
             - $ref: "#/components/schemas/HairColor"
@@ -252,7 +337,7 @@ components:
         nationality:
           allOf: 
             - $ref: "#/components/schemas/Country"
-            - nullable: false
+            - nullable: true
         location:
           allOf: 
             - $ref: "#/components/schemas/Location"
@@ -262,24 +347,24 @@ components:
         
     Location:
       required:
-        - x
-        - z
+        - y
         - name
       type: object
       properties:
         x:
           type: number
           format: double
-          nullable: false
+          nullable: true
           example: "11"
         y:
           type: number
           format: double
+          nullable: false
           example: "11"
         z:
           type: number
           format: float
-          nullable: false
+          nullable: true
           example: "11.11"
         name:
           type: string
