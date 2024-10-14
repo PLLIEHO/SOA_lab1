@@ -1,0 +1,1005 @@
+openapi: 3.0.3
+info:
+  title: SOA lab 1 Dorofeev-Gribov
+  description: |-
+    - Лабораторная работа номер 1 по предмету "Сервис-ориентированная архитектура"
+    - Необходимо разработать спецификацию в формате Open-API
+  version: 1.0.11
+servers:
+  - url: https://worker/api
+tags:
+  - name: worker
+  - name: additional operations
+paths:
+  /workers:
+    get:
+      tags:
+        - worker
+      summary: Get list of all existing workers
+      description: get list of existing workers with possibility of sorting and/or filtering
+      operationId: getWorker
+      parameters:
+      - in: query
+        name: filter
+        schema:
+            type: array
+            items:
+              type: string
+        description: >+
+          Array of strings with special filter construction: **parameter[operator]value**\
+
+          `operator` supported list:
+            * **l**  -- **<**, supports types: number, date
+            * **le** -- **<=**, supports types: number, date
+            * **g**  -- **>**, supports types: number, date
+            * **ge** -- **>=**, supports types: number, date
+            * **cmp**  -- **==**, supports types: number, string, enum, date
+            * **cmpn** -- **!=**, supports types: number, string, enum, date
+            * **con** -- **contains string or character**, support types: string 
+
+            **value** can only be the same type as the **parameter**. Filters are applying one after another in order they were passed to server.
+        examples:
+          byWorkerId:
+            value: ["id[le]5"]
+            summary:  by worker ID [l, le, g, ge, cmp, cmpn]
+          byWorkerName:
+            value: ["name[cmp]Anatoliy"]
+            summary:  by worker Name [cmp, cmpn, con]
+          byWorkerCoordinatesY:
+            value: ["coordinatesy[ge]800.8"]
+            summary:  by worker Coordinate Y [l, le, g, ge, cmp, cmpn]
+          byWorkerCoordinatesX:
+            value: ["coordinatesx[g]600"]
+            summary:  by worker Coordinate X [l, le, g, ge, cmp, cmpn]
+          byWorkerCreationDate:
+            value: ["creationdate[cmpn]2024-10-10"]
+            summary:  by worker Creation Date [l, le, g, ge, cmp, cmpn]
+          byWorkerSalary:
+            value: ["salary[g]800"]
+            summary:  by worker Salary [l, le, g, ge, cmp, cmpn]
+          byWorkerStartDate:
+            value: ["startdate[l]Mon May 11 00:00:00 MSD 2024"]
+            summary:  by worker StartDate [l, le, g, ge, cmp, cmpn]
+          byWorkerEndDate:
+            value: ["enddate[cmp]2024-10-10T09:39:39.275039200"]
+            summary:  by worker EndDate [l, le, g, ge, cmp, cmpn]
+          byWorkerStatus:
+            value: ["status[cmpn]fired"]
+            summary:  by worker Status [cmp, cmpn]
+          byWorkerBirthday:
+            value: ["birthday[ge]Mon May 11 00:00:00 MSD 2024"]
+            summary:  by worker Birthday [l, le, g, ge, cmp, cmpn]
+          byWorkerEyeColor:
+            value: ["eyecolor[cmp]white"]
+            summary:  by worker Eyecolor [cmp, cmpn]
+          byWorkerHairColor:
+            value: ["haircolor[cmpn]black"]
+            summary: by worker Haircolor [cmp, cmpn]
+          byWorkerNationality:
+            value: ["nationality[cmp]france"]
+            summary: by worker Nationality [cmp, cmpn]
+          byWorkerLocationX:
+            value: ["locationx[g]600.66"]
+            summary:  by worker Location X [l, le, g, ge, cmp, cmpn]
+          byWorkerLocationY:
+            value: ["locationy[l]600.66"]
+            summary:  by worker Location Y [l, le, g, ge, cmp, cmpn]
+          byWorkerLocationZ:
+            value: ["locationz[ge]600.6"]
+            summary:  by worker Location Z [l, le, g, ge, cmp, cmpn]
+          byWorkerLocationName:
+            value: ["locationname[con]Saint-"]
+            summary:  by worker Location Name [cmp, cmpn, con]
+      - in: query
+        name: sort
+        schema:
+            type: array
+            items:
+              type: string
+        description: >+
+          Array of strings with special sorting construction: **parameter[operator]**\
+
+          `operator` supported list:
+            * **asc**  -- supports types: number, string, enum, date
+            * **desc** -- supports types: number, string, enum, date
+
+            **string/enum** values are sorting in alphabetical order.
+        examples:
+          byWorkerId:
+            value: ["id[asc]"]
+            summary:  by worker ID [asc, desc]
+          byWorkerName:
+            value: ["name[desc]"]
+            summary:  by worker Name [asc, desc]
+          byWorkerCoordinatesY:
+            value: ["coordinatesy[asc]"]
+            summary:  by worker Coordinate Y [asc, desc]
+          byWorkerCoordinatesX:
+            value: ["coordinatesx[desc]"]
+            summary:  by worker Coordinate X [asc, desc]
+          byWorkerCreationDate:
+            value: ["creationdate[asc]"]
+            summary:  by worker Creation Date [asc, desc]
+          byWorkerSalary:
+            value: ["salary[desc]"]
+            summary:  by worker Salary [asc, desc]
+          byWorkerStartDate:
+            value: ["startdate[asc]"]
+            summary:  by worker StartDate [asc, desc]
+          byWorkerEndDate:
+            value: ["enddate[desc]"]
+            summary:  by worker EndDate [asc, desc]
+          byWorkerStatus:
+            value: ["status[asc]"]
+            summary:  by worker Status [asc, desc]
+          byWorkerBirthday:
+            value: ["birthday[desc]"]
+            summary:  by worker Birthday [asc, desc]
+          byWorkerEyeColor:
+            value: ["eyecolor[asc]"]
+            summary:  by worker Eyecolor [asc, desc]
+          byWorkerHairColor:
+            value: ["haircolor[desc]"]
+            summary: by worker Haircolor [asc, desc]
+          byWorkerNationality:
+            value: ["nationality[asc]"]
+            summary: by worker Nationality [asc, desc]
+          byWorkerLocationX:
+            value: ["locationx[desc]"]
+            summary:  by worker Location X [asc, desc]
+          byWorkerLocationY:
+            value: ["locationy[asc]"]
+            summary:  by worker Location Y [asc, desc]
+          byWorkerLocationZ:
+            value: ["locationz[desc]"]
+            summary:  by worker Location Z [asc, desc]
+          byWorkerLocationName:
+            value: ["locationname[asc]"]
+            summary:  by worker Location Name [asc, desc]
+      - name: page_size
+        in: query
+        required: true
+        description: Size of one page. If set to 0, pagination will be turned off and user will see the whole result.
+        schema:
+          type: integer
+          format: int32
+          nullable: false
+          minimum: 0
+          maximum: 5000
+          example: 5
+      - name: page_offset
+        in: query
+        required: true
+        description: How many entries should system skip for showing current page? If **page_size** parameter equals "0", this parameter will not be used.
+        schema:
+          type: integer
+          format: int32
+          nullable: false
+          minimum: 0
+          example: 15
+      responses:
+        '200':
+          description: workers list with page size and number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Worker'
+                  page_number:
+                    type: integer
+                    format: uint64
+                  page_size:
+                    type: integer
+                    format: uint64
+        '400':
+          description: mistake in parameters passed to filter or sort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/InvalidParamsException'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+  /worker:
+    patch:
+      tags:
+        - worker
+      summary: Update an existing worker
+      description: Update an existing worker
+      operationId: updateWorker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkerDTO'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Worker'          
+        '400':
+          description: mistake in parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/InvalidParamsException'
+        '404':
+          description: ID not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+    post:
+      tags:
+        - worker
+      summary: Add new worker
+      description: Add  worker.
+      operationId: addWorker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkerDTO'
+              
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Worker'          
+        '400':
+          description: mistake in parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/InvalidParamsException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+
+  /worker/{worker-id}:
+    get:
+      tags:
+        - worker
+      summary: Get worker by id
+      description: get worker by it's id. No filtering/sorting provided.
+      operationId: getWorkerById
+      parameters:
+      - in: path
+        name: worker-id
+        required: true
+        schema:
+          type: integer
+        description: id of worker we need to get
+      responses:
+        '200':
+          description: requested worker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Worker'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+    delete:
+      tags:
+        - worker
+      summary: Delete worker by id
+      description: delete worker by it's id. 
+      operationId: deleteWorkerById
+      parameters:
+      - in: path
+        name: worker-id
+        required: true
+        schema:
+          type: integer
+        description: id of worker we need to delete
+      responses:
+        '200':
+          description: succesfully deleted
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+
+  /workers/salary:
+    get:
+      tags:
+        - additional operations
+      summary: Summarize all workers' salary
+      description: Summarize all workers' salary. Workers with "fired" status will not affect the answer.
+      operationId: summarizeSalary
+      responses:
+        '200':
+          description: requested number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summarized_salary:
+                    type: integer
+                    format: long
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+  /worker/max-id:
+    get:
+      tags:
+        - additional operations
+      summary: Find worker with biggest id
+      description: Will search for worker with largest id property
+      operationId: findMaxId
+      responses:
+        '200':
+          description: requested worker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Worker'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+
+  /workers/person:
+    post:
+      tags:
+        - additional operations
+      summary: Find workers with specified person parameter
+      description: Will search for workers with passed person entity and count them
+      operationId: findByPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+              
+        required: true
+      responses:
+        '200':
+          description: requested number of workers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workers-count: 
+                    type: number
+        '400':
+          description: mistake in parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/InvalidParamsException'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+components:
+  schemas:
+  
+    Worker:
+      required:
+        - name
+        - coordinates
+        - salary
+        - startDate
+        - endDate
+        - status
+        - person
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+          nullable: false
+          minimum: 1
+          example: 12
+          description: "Value is unique. Generated automatically."
+          
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: "Anatoliy"
+          
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+            - nullable: false
+            
+        creationDate:
+          type: string
+          format: localDate
+          nullable: false
+          example: "2024-10-10"
+          description: "Value is generated automatically."
+          
+        salary:
+          type: number
+          format: long
+          minimum: 1
+          
+        startDate:
+          type: string
+          format: date
+          nullable: false
+          example: "Mon May 11 00:00:00 MSD 2024"
+          
+        endDate:
+          type: string
+          format: localDateTime
+          nullable: false
+          example: "2024-10-10T09:39:39.275039200"
+          
+        status:
+          allOf: 
+            - $ref: "#/components/schemas/Status"
+            - nullable: false
+            
+        person:
+          allOf: 
+            - $ref: "#/components/schemas/Person"
+            - nullable: false
+            
+      xml:
+        name: worker
+
+
+
+    CreateWorkerDTO:
+      required:
+        - name
+        - coordinates
+        - salary
+        - startDate
+        - endDate
+        - status
+        - person
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: "Anatoliy"
+          
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+            - nullable: false
+          
+        salary:
+          type: number
+          format: long
+          minimum: 1
+          
+        startDate:
+          type: string
+          format: date
+          nullable: false
+          example: "Mon May 11 00:00:00 MSD 2024"
+          
+        endDate:
+          type: string
+          format: localDateTime
+          nullable: false
+          example: "2024-10-10T09:39:39.275039200"
+          
+        status:
+          allOf: 
+            - $ref: "#/components/schemas/Status"
+            - nullable: false
+            
+        person:
+          allOf: 
+            - $ref: "#/components/schemas/Person"
+            - nullable: false
+
+
+    WorkerDTO:
+      required:
+        - name
+        - coordinates
+        - salary
+        - startDate
+        - endDate
+        - status
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+          nullable: false
+          minimum: 1
+          example: 12
+          description: "Value is unique. Generated automatically."
+          
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: "Anatoliy"
+          
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+            - nullable: false
+          
+        salary:
+          type: number
+          format: long
+          minimum: 1
+          
+        endDate:
+          type: string
+          format: localDateTime
+          nullable: false
+          example: "2024-10-10T09:39:39.275039200"
+          
+        status:
+          allOf: 
+            - $ref: "#/components/schemas/Status"
+            - nullable: false
+
+    Coordinates:
+      required:
+        - x
+        - y
+      type: object
+      properties:
+        x:
+          type: number
+          format: long
+          nullable: false
+          maximum: -106
+          example: -555
+        y:
+          type: number
+          format: float
+          nullable: false
+          example: -555.55
+      xml:
+        name: coordinates
+        
+    Person:
+      required:
+        - birthday
+        - eyeColor
+        - hairColor
+        - nationality
+        - location
+      type: object
+      properties:
+        birthday:
+          type: string
+          format: date
+          nullable: false
+          example: "Mon May 11 00:00:00 MSD 2024"
+        eyeColor:
+          allOf: 
+            - $ref: "#/components/schemas/EyeColor"
+            - nullable: false
+        hairColor:
+          allOf: 
+            - $ref: "#/components/schemas/HairColor"
+            - nullable: false
+        nationality:
+          allOf: 
+            - $ref: "#/components/schemas/Country"
+            - nullable: false
+        location:
+          allOf: 
+            - $ref: "#/components/schemas/Location"
+            - nullable: false
+      xml:
+        name: person
+        
+    Location:
+      required:
+        - x
+        - z
+        - name
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+          nullable: false
+          example: "11"
+        y:
+          type: number
+          format: double
+          example: "11"
+        z:
+          type: number
+          format: float
+          nullable: false
+          example: "11.11"
+        name:
+          type: string
+          minLength: 1
+          nullable: false
+      xml: 
+        name: location
+    
+    Status:
+      type: string
+      enum:
+        - fired
+        - hired
+        - recommended_for_promotion
+        - regular
+        - probation
+      example: "fired"
+    
+    EyeColor:
+      type: string
+      enum:
+        - green
+        - white
+        - brown
+      example: "green"
+    
+    HairColor:
+      type: string
+      enum: 
+        - green
+        - black
+        - blue
+      example: "green"
+      
+    Country: 
+      type: string
+      enum: 
+        - france
+        - thailand
+        - south_korea
+        - north_korea
+        - japan
+      example: "france"
+      
+    InvalidParamsException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 400
+          nullable: false
+        error_message:
+          type: array
+          items:
+            type: string
+            example: "Cannot process passed parameter: {param}"
+          nullable: false
+
+    NotFoundException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 404
+          nullable: false
+        error_message:
+          type: string
+          example: "Not found"
+          nullable: false
+
+    TooManyRequestsException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 429
+          nullable: false
+        error_message:
+          type: string
+          example: "You made too many request recently. Please, wait for some time and try again."
+          nullable: false
+
+    IternalServerException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 500
+          nullable: false
+        error_message:
+          type: string
+          example: "Iternal server exception. Try again later or contact our support."
+          nullable: false
+
+    ServerUnavailableException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 503
+          nullable: false
+        error_message:
+          type: string
+          example: "Server is unavailable now. Try again later."
+          nullable: false

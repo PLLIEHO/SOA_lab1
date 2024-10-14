@@ -1,0 +1,402 @@
+openapi: 3.0.3
+info:
+  title: SOA lab 1 Dorofeev-Gribov
+  description: |-
+    - Лабораторная работа номер 1 по предмету "Сервис-ориентированная архитектура"
+    - Необходимо разработать спецификацию в формате Open-API
+  version: 1.0.11
+servers:
+  - url: https://worker/api/hr
+tags:
+  - name: hr
+paths:
+  /hire/{salary}/{start-date}:
+    post:
+      tags:
+        - hr
+      summary: Hire a new worker
+      description: Hire worker. Person object, salary and start-date are needed.
+      operationId: hireWorker
+      parameters:
+      - in: path
+        name: salary
+        required: true
+        schema:
+          type: integer
+        description: this number will be assigned as new worker's salary
+      - in: path
+        name: start-date
+        required: true
+        schema:
+          type: string
+          format: date
+        description: this date will be a start date for new worker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+        required: true
+        description: this person will be assigned as new worker
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Worker'          
+        '400':
+          description: mistake in parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/InvalidParamsException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+
+
+  /fire/{id}:
+    patch:
+      tags:
+        - hr
+      summary: Fire an existing worker
+      description: Fire a worker and make his status "Fired"
+      operationId: fireWorker
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: worker id
+      responses:
+        '200':
+          description: Successful operation       
+        '404':
+          description: no such id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/NotFoundException'
+        '429':
+          description: too many requests in a short time
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/TooManyRequestsException'
+        '500':
+          description: server-side error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/IternalServerException'
+        '503':
+          description: server is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ServerUnavailableException'
+    
+components:
+  schemas:
+  
+    Worker:
+      required:
+        - name
+        - coordinates
+        - salary
+        - startDate
+        - endDate
+        - status
+        - person
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+          nullable: false
+          minimum: 1
+          example: 12
+          description: "Value is unique. Generated automatically."
+          
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: "Anatoliy"
+          
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+            - nullable: false
+            
+        creationDate:
+          type: string
+          format: localDate
+          nullable: false
+          example: "2024-10-10"
+          description: "Value is generated automatically."
+          
+        salary:
+          type: number
+          format: long
+          minimum: 1
+          
+        startDate:
+          type: string
+          format: date
+          nullable: false
+          example: "Mon May 11 00:00:00 MSD 2024"
+          
+        endDate:
+          type: string
+          format: localDateTime
+          nullable: false
+          example: "2024-10-10T09:39:39.275039200"
+          
+        status:
+          allOf: 
+            - $ref: "#/components/schemas/Status"
+            - nullable: false
+            
+        person:
+          allOf: 
+            - $ref: "#/components/schemas/Person"
+            - nullable: false
+            
+      xml:
+        name: worker
+
+    Coordinates:
+      required:
+        - x
+        - y
+      type: object
+      properties:
+        x:
+          type: number
+          format: long
+          nullable: false
+          maximum: -106
+          example: -555
+        y:
+          type: number
+          format: float
+          nullable: false
+          example: -555.55
+      xml:
+        name: coordinates
+        
+    Person:
+      required:
+        - birthday
+        - eyeColor
+        - hairColor
+        - nationality
+        - location
+      type: object
+      properties:
+        birthday:
+          type: string
+          format: date
+          nullable: false
+          example: "Mon May 11 00:00:00 MSD 2024"
+        eyeColor:
+          allOf: 
+            - $ref: "#/components/schemas/EyeColor"
+            - nullable: false
+        hairColor:
+          allOf: 
+            - $ref: "#/components/schemas/HairColor"
+            - nullable: false
+        nationality:
+          allOf: 
+            - $ref: "#/components/schemas/Country"
+            - nullable: false
+        location:
+          allOf: 
+            - $ref: "#/components/schemas/Location"
+            - nullable: false
+      xml:
+        name: person
+        
+    Location:
+      required:
+        - x
+        - z
+        - name
+      type: object
+      properties:
+        x:
+          type: number
+          format: double
+          nullable: false
+          example: "11"
+        y:
+          type: number
+          format: double
+          example: "11"
+        z:
+          type: number
+          format: float
+          nullable: false
+          example: "11.11"
+        name:
+          type: string
+          minLength: 1
+          nullable: false
+      xml: 
+        name: location
+    
+    Status:
+      type: string
+      enum:
+        - fired
+        - hired
+        - recommended_for_promotion
+        - regular
+        - probation
+      example: "fired"
+    
+    EyeColor:
+      type: string
+      enum:
+        - green
+        - white
+        - brown
+      example: "green"
+    
+    HairColor:
+      type: string
+      enum: 
+        - green
+        - black
+        - blue
+      example: "green"
+      
+    Country: 
+      type: string
+      enum: 
+        - france
+        - thailand
+        - south_korea
+        - north_korea
+        - japan
+      example: "france"
+      
+    InvalidParamsException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 400
+          nullable: false
+        error_message:
+          type: array
+          items:
+            type: string
+            example: "Cannot process passed parameter: {param}"
+          nullable: false
+
+    NotFoundException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 404
+          nullable: false
+        error_message:
+          type: string
+          example: "Not found"
+          nullable: false
+
+    TooManyRequestsException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 429
+          nullable: false
+        error_message:
+          type: string
+          example: "You made too many request recently. Please, wait for some time and try again."
+          nullable: false
+
+    IternalServerException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 500
+          nullable: false
+        error_message:
+          type: string
+          example: "Iternal server exception. Try again later or contact our support."
+          nullable: false
+
+    ServerUnavailableException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 503
+          nullable: false
+        error_message:
+          type: string
+          example: "Server is unavailable now. Try again later."
+          nullable: false
