@@ -6,7 +6,7 @@ info:
     - Необходимо разработать спецификацию в формате Open-API
   version: 1.0.11
 servers:
-  - url: https://worker/api/hr
+  - url: https://localhsot:4242/api/hr
 tags:
   - name: hr
 paths:
@@ -46,7 +46,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Worker'          
         '400':
-          description: mistake in parameters
+          description: unoperable parameters
           content:
             application/json:
               schema:
@@ -54,6 +54,15 @@ paths:
                 properties:
                   error:
                     $ref: '#/components/schemas/InvalidParamsException'
+        '422':
+          description: mistake in parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/InvalidParamsReqException'
         '429':
           description: too many requests in a short time
           content:
@@ -469,6 +478,23 @@ components:
         error_message:
           type: string
           example: "Iternal server exception. Try again later or contact our support."
+          nullable: false
+
+    InvalidParamsReqException:
+      required:
+        - error_code
+        - error_message
+      type: object
+      properties:
+        error_code:
+          type: number
+          example: 422
+          nullable: false
+        error_message:
+          type: array
+          items:
+            type: string
+            example: "Cannot process passed parameter: {param}"
           nullable: false
 
     ServerUnavailableException:
