@@ -6,7 +6,7 @@ info:
     - Необходимо разработать спецификацию в формате Open-API
   version: 1.0.11
 servers:
-  - url: https://worker/api
+  - url: https://localhsot:4242/api
 tags:
   - name: worker
   - name: additional operations
@@ -198,7 +198,7 @@ paths:
                   page_amount:
                     type: integer
                     format: uint64
-        '422':
+        '400':
           description: mistake in parameters passed to filter or sort
           content:
             application/json:
@@ -271,7 +271,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Worker'          
         '400':
-          description: mistake in URI parameters
+          description: unoperable parameters
           content:
             application/json:
               schema:
@@ -346,7 +346,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Worker'          
         '400':
-          description: mistake in URI parameters
+          description: unoperable parameters
           content:
             application/json:
               schema:
@@ -549,7 +549,7 @@ paths:
 
 
   /workers/person:
-    post:
+    get:
       tags:
         - additional operations
       summary: Find workers with specified person parameter
